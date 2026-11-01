@@ -10,3 +10,6 @@ coverage
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# TypeScript incremental build info
+*.tsbuildinfo
