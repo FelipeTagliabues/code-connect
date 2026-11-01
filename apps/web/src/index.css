@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #01080e;
+  --color-card: #171d1f;
+  --color-primary: #81fe88;
+  --color-input: #888888;
+  --color-offwhite: #e1e1e1;
+  --color-shape: #0b1416;
+  --color-error: #ff8a8a;
+
+  --font-sans: 'Prompt', sans-serif;
+}
+
+body {
+  @apply bg-bg font-sans text-offwhite antialiased;
+}
