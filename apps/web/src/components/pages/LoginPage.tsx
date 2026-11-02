@@ -1,13 +1,7 @@
-import { Icon } from '../atoms/Icon.tsx'
-import { TextLink } from '../atoms/TextLink.tsx'
+import { AuthPrompt } from '../molecules/AuthPrompt.tsx'
 import { LoginForm, type LoginFormData } from '../organisms/LoginForm.tsx'
-import { SocialLogin, type SocialProvider } from '../organisms/SocialLogin.tsx'
+import { SocialLogin } from '../organisms/SocialLogin.tsx'
 import { AuthTemplate } from '../templates/AuthTemplate.tsx'
-
-const socialProviders: SocialProvider[] = [
-  { name: 'Github', icon: '/github.png' },
-  { name: 'Gmail', icon: '/gmail.png' },
-]
 
 export function LoginPage() {
   function handleLogin({ usuario, lembrar }: LoginFormData) {
@@ -18,20 +12,21 @@ export function LoginPage() {
   return (
     <AuthTemplate
       bannerSrc="/banner-login.png"
+      bannerClassName="object-[51%_center]"
       bannerAlt="Pessoa sorrindo enquanto programa em um notebook, cercada por telas com brilho verde"
       title="Login"
       subtitle="Boas-vindas! Faça seu login."
       footer={
-        <>
-          <p>Ainda não tem conta?</p>
-          <TextLink to="/cadastro" variant="accent">
-            Crie seu cadastro! <Icon name="clipboard" />
-          </TextLink>
-        </>
+        <AuthPrompt
+          question="Ainda não tem conta?"
+          linkLabel="Crie seu cadastro!"
+          to="/cadastro"
+          icon="clipboard"
+        />
       }
     >
       <LoginForm onSubmit={handleLogin} />
-      <SocialLogin providers={socialProviders} />
+      <SocialLogin />
     </AuthTemplate>
   )
 }

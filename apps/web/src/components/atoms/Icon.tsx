@@ -1,5 +1,6 @@
 const paths = {
   'arrow-right': <path d="M5 12h14M13 6l6 6-6 6" />,
+  login: <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />,
   clipboard: (
     <>
       <rect x="5" y="4" width="14" height="17" rx="2" />

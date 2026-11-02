@@ -7,7 +7,7 @@ type CheckboxProps = Omit<ComponentProps<'input'>, 'type'> & {
 export function Checkbox({ label, className = '', ...props }: CheckboxProps) {
   return (
     <label
-      className={`flex cursor-pointer items-center gap-2 text-input ${className}`}
+      className={`flex cursor-pointer items-center gap-2 text-sm text-input ${className}`}
     >
       <input
         type="checkbox"

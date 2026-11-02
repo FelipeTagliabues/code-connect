@@ -50,6 +50,14 @@ pnpm api format                                 # prettier on src/ and test/
 
 Tailwind v4 is the styling library (via `@tailwindcss/vite`; design tokens live in the `@theme` block of `src/index.css`). Routing uses `react-router` (`src/App.tsx`). Tests run with Vitest (`globals: true`, jsdom, config in `vite.config.ts`) + React Testing Library: `pnpm web test`. Components that render `TextLink` need a `MemoryRouter` in tests.
 
+### Colors and font sizes
+
+Never write hex values or arbitrary font sizes (`text-[15px]`, `bg-[#888]`) in classes. Everything comes from the `@theme` block of `src/index.css`:
+
+- **Colors have two layers.** The *palette* (`grafite`, `cinza-escuro`, `cinza-medio`, `verde-destaque`, `verde-petroleo`, `offwhite`, `vermelho-erro`) is the only place hex values live. The *semantic roles* (`bg`, `card`, `input`, `primary`, `on-primary`, `error`) point to the palette via `var(--color-*)`, and components should use the roles (`bg-primary`, `text-on-primary`). Use a palette color directly only when no role fits (e.g. `text-offwhite`, `bg-offwhite`).
+- **A new color** is added to the palette first; add a semantic role only if it has a recurring purpose.
+- **Font sizes use the default Tailwind scale** (`text-xs`, `text-sm`, `text-lg`, `text-2xl`, `text-3xl`...). When the Figma size has no exact token, pick the closest one instead of customizing: 31px → `text-3xl`, 22px → `text-2xl`, 15px → `text-sm`, 12.5px → `text-xs`. Do not add `--text-*` tokens to the theme.
+
 ### Component Structure - Atomic Design
 
 All components live under `src/components/` and follow Atomic Design:

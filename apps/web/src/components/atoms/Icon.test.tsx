@@ -8,4 +8,9 @@ describe('Icon', () => {
     expect(svg).toHaveAttribute('data-icon', 'arrow-right')
     expect(svg).toHaveAttribute('aria-hidden', 'true')
   })
+
+  it('renderiza o ícone de login', () => {
+    const { container } = render(<Icon name="login" />)
+    expect(container.querySelector('svg')).toHaveAttribute('data-icon', 'login')
+  })
 })

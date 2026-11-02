@@ -1,9 +1,14 @@
 import type { ReactNode } from 'react'
 import { Heading } from '../atoms/Heading.tsx'
+import { Logo } from '../atoms/Logo.tsx'
 
 type AuthTemplateProps = {
   bannerSrc: string
+  /** Variantes responsivas do banner (ex.: `/b-768.webp 768w, /b.webp 1344w`). */
+  bannerSrcSet?: string
   bannerAlt: string
+  /** Enquadramento da foto dentro do banner (ex.: `object-[60%_center]`). */
+  bannerClassName?: string
   title: string
   subtitle: string
   children: ReactNode
@@ -12,24 +17,26 @@ type AuthTemplateProps = {
 
 function ChainShape({ className }: { className: string }) {
   return (
-    <svg
-      viewBox="0 0 420 480"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={45}
-      className={`pointer-events-none absolute hidden text-shape lg:block ${className}`}
+    <div
+      className={`pointer-events-none absolute hidden h-[486px] w-[407px] overflow-clip opacity-30 lg:block ${className}`}
       aria-hidden="true"
     >
-      <rect x="25" y="120" width="200" height="335" rx="100" />
-      <rect x="195" y="25" width="200" height="335" rx="100" />
-    </svg>
+      <div className="absolute inset-[25.85%_44.09%_0_0]">
+        <img src="/chain-a.svg" alt="" className="absolute block size-full max-w-none" />
+      </div>
+      <div className="absolute inset-[0_0.02%_25.85%_44.09%]">
+        <img src="/chain-b.svg" alt="" className="absolute block size-full max-w-none" />
+      </div>
+    </div>
   )
 }
 
 /** Layout base das páginas de autenticação (login, cadastro). */
 export function AuthTemplate({
   bannerSrc,
+  bannerSrcSet,
   bannerAlt,
+  bannerClassName = '',
   title,
   subtitle,
   children,
@@ -37,26 +44,33 @@ export function AuthTemplate({
 }: AuthTemplateProps) {
   return (
     <div className="relative flex min-h-svh items-center justify-center overflow-hidden bg-bg px-4 py-10">
-      <ChainShape className="-top-10 left-[7%] w-[420px]" />
-      <ChainShape className="right-[7%] -bottom-10 w-[420px]" />
+      <ChainShape className="-top-2 left-[142px]" />
+      <ChainShape className="right-[142px] bottom-0" />
 
-      <main className="relative flex w-full max-w-[1000px] gap-16 rounded-4xl bg-card p-8 md:px-20 md:py-14">
-        <img
-          src={bannerSrc}
-          alt={bannerAlt}
-          className="hidden w-[407px] shrink-0 object-cover md:block"
-        />
-        <section className="flex flex-1 flex-col gap-8">
-          <header className="flex flex-col gap-6">
-            <Heading>{title}</Heading>
-            <p className="text-2xl text-offwhite">{subtitle}</p>
-          </header>
-          {children}
-          {footer && (
-            <footer className="flex flex-col items-center gap-3 text-offwhite">
-              {footer}
-            </footer>
-          )}
+      <main className="relative flex w-full max-w-[996px] flex-col gap-8 rounded-4xl border border-bg bg-card p-6 md:p-12 lg:flex-row lg:justify-between lg:px-[78px] lg:py-14">
+        <figure className="relative h-80 shrink-0 overflow-hidden md:h-[414px] lg:h-auto lg:w-[407px]">
+          <img
+            src={bannerSrc}
+            srcSet={bannerSrcSet}
+            sizes="(min-width: 1024px) 900px, (min-width: 768px) 620px, 480px"
+            width={1344}
+            height={896}
+            fetchPriority="high"
+            decoding="async"
+            alt={bannerAlt}
+            className={`size-full object-cover ${bannerClassName}`}
+          />
+          <Logo className="absolute bottom-8 left-1/2 -translate-x-1/2" />
+        </figure>
+        <section className="flex flex-col gap-6 lg:w-[410px] lg:shrink-0 lg:px-8">
+          <div className="flex flex-col gap-8">
+            <header className="flex flex-col gap-6">
+              <Heading>{title}</Heading>
+              <p className="text-2xl text-offwhite">{subtitle}</p>
+            </header>
+            {children}
+          </div>
+          {footer}
         </section>
       </main>
     </div>

@@ -23,4 +23,22 @@ describe('AuthTemplate', () => {
     expect(screen.getByRole('form', { name: 'Formulário' })).toBeInTheDocument()
     expect(screen.getByText('Rodapé')).toBeInTheDocument()
   })
+
+  it('carrega o banner com prioridade e variantes responsivas', () => {
+    render(
+      <AuthTemplate
+        bannerSrc="/banner.webp"
+        bannerSrcSet="/banner-768.webp 768w, /banner.webp 1344w"
+        bannerAlt="Banner de teste"
+        title="Título"
+        subtitle="Subtítulo"
+      >
+        <form aria-label="Formulário" />
+      </AuthTemplate>,
+    )
+    const banner = screen.getByRole('img', { name: 'Banner de teste' })
+    expect(banner).toHaveAttribute('srcset', '/banner-768.webp 768w, /banner.webp 1344w')
+    expect(banner).toHaveAttribute('fetchpriority', 'high')
+    expect(banner).not.toHaveAttribute('loading', 'lazy')
+  })
 })

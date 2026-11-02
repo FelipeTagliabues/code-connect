@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 
 const variants = {
   underline: 'text-offwhite underline underline-offset-2 hover:text-primary',
-  accent: 'text-xl text-primary hover:brightness-90',
+  accent: 'gap-3 text-lg text-primary hover:brightness-90 [&_svg]:size-6',
 }
 
 type TextLinkProps = ComponentProps<typeof Link> & {
