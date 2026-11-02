@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-pnpm workspace monorepo (`pnpm-workspace.yaml` → `apps/*`) with two apps, both still close to their scaffolded starters:
+pnpm workspace monorepo (`pnpm-workspace.yaml` → `apps/*`) with two apps:
 
-- `apps/api` — NestJS 12 backend (Express platform), listens on `PORT` or 3000.
-- `apps/web` — React 19 + Vite 8 frontend (TypeScript 7).
+- `apps/api` — NestJS 12 backend (Express platform), listens on `PORT` or 3000. Persists users, posts, likes and comments in Postgres through Drizzle ORM (`src/database/`, schema in `src/database/schema.ts`). Post search is Postgres full text (`posts.search_vector`, a generated column that needs the functions from migration `0001_search_functions`). Reads are public (`OptionalAuthGuard`); writes need a JWT (`AuthGuard`). Thumbnails are stored in `UPLOADS_DIR` (default `uploads/`, gitignored) and served at `/uploads`.
+- `apps/web` — React 19 + Vite 8 frontend (TypeScript 7). `/feed`, `/posts/:id` and `/publicar` share `MainTemplate` through a layout route; `useSession` exposes the login state without a Provider.
 
-There are no shared packages yet, and the web app does not call the API yet (no proxy configured in `apps/web/vite.config.ts`).
+There are no shared packages yet. The web app calls the API with axios through `apps/web/src/services/`; `VITE_API_URL` defaults to `/api`, which the proxy in `apps/web/vite.config.ts` forwards to `http://localhost:3000` without the prefix.
 
 ## Commands
 
@@ -26,9 +26,15 @@ pnpm test             # tests in apps that define a "test" script (api and web)
 # Any app script via the filter shortcuts:
 pnpm api test:e2e     # = pnpm --filter api test:e2e
 pnpm web preview
+
+# Database (Postgres 18 via Docker Compose, named volume `postgres_data`)
+docker compose up -d      # then copy apps/api/.env.example to apps/api/.env
+pnpm api db:generate      # drizzle-kit: new migration in apps/api/drizzle/ after editing schema.ts
+pnpm api db:migrate       # apply migrations to DATABASE_URL
+pnpm api db:seed          # mock authors and posts; safe to rerun, only recreates the posts of *@codeconnect.dev (password: senha12345)
 ```
 
-API tests use **Vitest** (not Jest), with `globals: true`:
+API tests use **Vitest** (not Jest), with `globals: true`. They need no Docker: specs and e2e tests run on in-memory PGlite via `apps/api/test/create-test-database.ts`, which applies the real migrations; e2e overrides the `PG_POOL` and `DRIZZLE` providers with it. `DATABASE_URL` is read inside the provider factory (after `main.ts` loads `.env`), never at import time.
 
 ```bash
 pnpm api test                                   # unit: **/*.spec.ts
