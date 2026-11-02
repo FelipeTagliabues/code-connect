@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { emailPattern } from '../../utils/validation.ts'
 import { Button } from '../atoms/Button.tsx'
 import { Checkbox } from '../atoms/Checkbox.tsx'
 import { Icon } from '../atoms/Icon.tsx'
@@ -6,27 +7,30 @@ import { TextLink } from '../atoms/TextLink.tsx'
 import { FormField } from '../molecules/FormField.tsx'
 
 export type LoginFormData = {
-  usuario: string
+  email: string
   senha: string
   lembrar: boolean
 }
 
-type LoginFormErrors = Partial<Record<'usuario' | 'senha', string>>
+type LoginFormErrors = Partial<Record<'email' | 'senha', string>>
 
 type LoginFormProps = {
   onSubmit: (data: LoginFormData) => void
+  error?: string
+  loading?: boolean
 }
 
-function validate({ usuario, senha }: LoginFormData): LoginFormErrors {
+function validate({ email, senha }: LoginFormData): LoginFormErrors {
   const errors: LoginFormErrors = {}
-  if (!usuario.trim()) errors.usuario = 'Informe seu email ou usuário.'
+  if (!email.trim()) errors.email = 'Informe seu email.'
+  else if (!emailPattern.test(email.trim())) errors.email = 'Informe um email válido.'
   if (!senha) errors.senha = 'Informe sua senha.'
   return errors
 }
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export function LoginForm({ onSubmit, error, loading = false }: LoginFormProps) {
   const [data, setData] = useState<LoginFormData>({
-    usuario: '',
+    email: '',
     senha: '',
     lembrar: false,
   })
@@ -42,13 +46,14 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
   return (
     <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-4">
       <FormField
-        label="Email ou usuário"
-        name="usuario"
-        placeholder="usuario123"
-        autoComplete="username"
-        value={data.usuario}
-        onChange={(e) => setData({ ...data, usuario: e.target.value })}
-        error={errors.usuario}
+        label="Email"
+        name="email"
+        type="email"
+        placeholder="Digite seu email"
+        autoComplete="email"
+        value={data.email}
+        onChange={(e) => setData({ ...data, email: e.target.value })}
+        error={errors.email}
       />
       <div className="flex flex-col gap-2">
         <FormField
@@ -71,7 +76,12 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
           <TextLink to="/recuperar-senha">Esqueci a senha</TextLink>
         </div>
       </div>
-      <Button type="submit" className="mt-4">
+      {error && (
+        <p role="alert" className="text-sm text-error">
+          {error}
+        </p>
+      )}
+      <Button type="submit" className="mt-4" disabled={loading}>
         Login <Icon name="arrow-right" />
       </Button>
     </form>

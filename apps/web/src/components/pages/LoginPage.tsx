@@ -1,12 +1,32 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { getApiErrorMessage } from '../../services/apiError.ts'
+import { signIn } from '../../services/auth.ts'
 import { AuthPrompt } from '../molecules/AuthPrompt.tsx'
 import { LoginForm, type LoginFormData } from '../organisms/LoginForm.tsx'
 import { SocialLogin } from '../organisms/SocialLogin.tsx'
 import { AuthTemplate } from '../templates/AuthTemplate.tsx'
 
 export function LoginPage() {
-  function handleLogin({ usuario, lembrar }: LoginFormData) {
-    // TODO: integrar com a API de autenticação
-    console.log('login', { usuario, lembrar })
+  const navigate = useNavigate()
+  const [error, setError] = useState<string>()
+  const [loading, setLoading] = useState(false)
+
+  async function handleLogin({ email, senha, lembrar }: LoginFormData) {
+    setError(undefined)
+    setLoading(true)
+    try {
+      await signIn(email.trim(), senha, lembrar)
+      await navigate('/feed')
+    } catch (err) {
+      setError(
+        getApiErrorMessage(err, {
+          401: 'Email ou senha inválidos.',
+          422: 'Verifique os dados informados.',
+        }),
+      )
+      setLoading(false)
+    }
   }
 
   return (
@@ -25,7 +45,7 @@ export function LoginPage() {
         />
       }
     >
-      <LoginForm onSubmit={handleLogin} />
+      <LoginForm onSubmit={handleLogin} error={error} loading={loading} />
       <SocialLogin />
     </AuthTemplate>
   )

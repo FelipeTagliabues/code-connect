@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { emailPattern } from '../../utils/validation.ts'
 import { Button } from '../atoms/Button.tsx'
 import { Checkbox } from '../atoms/Checkbox.tsx'
 import { Icon } from '../atoms/Icon.tsx'
@@ -7,31 +8,43 @@ import { FormField } from '../molecules/FormField.tsx'
 export type SignupFormData = {
   nome: string
   email: string
+  telefone: string
   senha: string
   lembrar: boolean
 }
 
-type SignupFormErrors = Partial<Record<'nome' | 'email' | 'senha', string>>
+type SignupFormErrors = Partial<
+  Record<'nome' | 'email' | 'telefone' | 'senha', string>
+>
 
 type SignupFormProps = {
   onSubmit: (data: SignupFormData) => void
+  error?: string
+  loading?: boolean
 }
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const phonePattern = /^\d{10,11}$/
+const MIN_PASSWORD_LENGTH = 8
 
-function validate({ nome, email, senha }: SignupFormData): SignupFormErrors {
+function validate({ nome, email, telefone, senha }: SignupFormData): SignupFormErrors {
   const errors: SignupFormErrors = {}
   if (!nome.trim()) errors.nome = 'Informe seu nome.'
   if (!email.trim()) errors.email = 'Informe seu email.'
   else if (!emailPattern.test(email.trim())) errors.email = 'Informe um email válido.'
+  if (!telefone.trim()) errors.telefone = 'Informe seu telefone.'
+  else if (!phonePattern.test(telefone.replace(/\D/g, '')))
+    errors.telefone = 'Informe um telefone com DDD.'
   if (!senha) errors.senha = 'Informe uma senha.'
+  else if (senha.length < MIN_PASSWORD_LENGTH)
+    errors.senha = `A senha deve ter ao menos ${MIN_PASSWORD_LENGTH} caracteres.`
   return errors
 }
 
-export function SignupForm({ onSubmit }: SignupFormProps) {
+export function SignupForm({ onSubmit, error, loading = false }: SignupFormProps) {
   const [data, setData] = useState<SignupFormData>({
     nome: '',
     email: '',
+    telefone: '',
     senha: '',
     lembrar: false,
   })
@@ -66,6 +79,16 @@ export function SignupForm({ onSubmit }: SignupFormProps) {
           onChange={(e) => setData({ ...data, email: e.target.value })}
           error={errors.email}
         />
+        <FormField
+          label="Telefone"
+          name="telefone"
+          type="tel"
+          placeholder="(11) 98765-4321"
+          autoComplete="tel"
+          value={data.telefone}
+          onChange={(e) => setData({ ...data, telefone: e.target.value })}
+          error={errors.telefone}
+        />
         <div className="flex flex-col gap-2">
           <FormField
             label="Senha"
@@ -85,7 +108,12 @@ export function SignupForm({ onSubmit }: SignupFormProps) {
           />
         </div>
       </div>
-      <Button type="submit">
+      {error && (
+        <p role="alert" className="text-sm text-error">
+          {error}
+        </p>
+      )}
+      <Button type="submit" disabled={loading}>
         Cadastrar <Icon name="arrow-right" />
       </Button>
     </form>

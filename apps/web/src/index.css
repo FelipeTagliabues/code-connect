@@ -5,9 +5,11 @@
   --color-grafite: #00090e;
   --color-cinza-escuro: #171d1f;
   --color-cinza-medio: #888888;
+  --color-cinza-claro: #bcbcbc;
   --color-verde-destaque: #81fe88;
   --color-verde-petroleo: #132e35;
   --color-offwhite: #e1e1e1;
+  --color-branco: #ffffff;
   --color-vermelho-erro: #ff8a8a;
 
   /* Papéis semânticos usados nos componentes */
@@ -19,6 +21,9 @@
   --color-error: var(--color-vermelho-erro);
 
   --font-sans: 'Prompt', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+
+  --shadow-editor: 0 16px 24px 0 rgb(0 0 0 / 0.24);
 }
 
 body {

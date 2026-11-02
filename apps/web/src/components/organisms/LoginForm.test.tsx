@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { LoginForm } from './LoginForm.tsx'
 
-function renderForm() {
+function renderForm(props: { error?: string; loading?: boolean } = {}) {
   const onSubmit = vi.fn()
   render(
     <MemoryRouter>
-      <LoginForm onSubmit={onSubmit} />
+      <LoginForm onSubmit={onSubmit} {...props} />
     </MemoryRouter>,
   )
   return { onSubmit }
@@ -21,17 +21,32 @@ describe('LoginForm', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
+  it('rejeita email com formato inválido', async () => {
+    const { onSubmit } = renderForm()
+    await userEvent.type(screen.getByLabelText('Email'), 'maria')
+    await userEvent.type(screen.getByLabelText('Senha'), 'segredo')
+    await userEvent.click(screen.getByRole('button', { name: 'Login' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('Informe um email válido.')
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
   it('envia os dados preenchidos', async () => {
     const { onSubmit } = renderForm()
-    await userEvent.type(screen.getByLabelText('Email ou usuário'), 'usuario123')
+    await userEvent.type(screen.getByLabelText('Email'), 'maria@exemplo.com')
     await userEvent.type(screen.getByLabelText('Senha'), 'segredo')
     await userEvent.click(screen.getByRole('checkbox', { name: 'Lembrar-me' }))
     await userEvent.click(screen.getByRole('button', { name: 'Login' }))
     expect(onSubmit).toHaveBeenCalledWith({
-      usuario: 'usuario123',
+      email: 'maria@exemplo.com',
       senha: 'segredo',
       lembrar: true,
     })
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('mostra o erro recebido e desabilita o botão ao carregar', () => {
+    renderForm({ error: 'Email ou senha inválidos.', loading: true })
+    expect(screen.getByRole('alert')).toHaveTextContent('Email ou senha inválidos.')
+    expect(screen.getByRole('button', { name: 'Login' })).toBeDisabled()
   })
 })
