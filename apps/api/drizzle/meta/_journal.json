@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793622302675,
+      "tag": "0000_round_deathbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793624439508,
+      "tag": "0001_search_functions",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793624600321,
+      "tag": "0002_posts_likes_comments",
+      "breakpoints": true
+    }
+  ]
+}
